@@ -8,11 +8,16 @@ import { BusinessException } from '../../common/exception/business.exception.ts'
 import { type Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import bcrypt from 'bcrypt';
+import * as svgCaptcha from 'svg-captcha';
+import { v7 as uuidv7 } from 'uuid';
+import UserLoginDto from './dto/userLogin.dto.ts';
 
 @Injectable()
 export class AuthService {
   private readonly CODE_TTL_MINUTES: number = 5; // 有效期
   private readonly CODE_PREFIX: string = 'email:verify:';
+  private readonly CAPTCHA_PREFIX: string = 'captcha:';
+  private readonly CAPTCHA_TTL_MINUTES: number = 1; // 验证码有效期
   private readonly logger = new Logger(AuthService.name); // 验证码缓存前缀
 
   constructor(
@@ -20,6 +25,65 @@ export class AuthService {
     private readonly mailer: Mailer,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
+
+  public async login(dto: UserLoginDto) {
+    try {
+      const captcha = await this.cacheManager.get<string>(
+        this.CAPTCHA_PREFIX + dto.captchaKey,
+      );
+      if (!captcha || captcha.toLowerCase() !== dto.captcha.toLowerCase()) {
+        throw new BusinessException('验证码错误或已过期');
+      }
+      const user = await this.userRepository.findOne({
+        where: {
+          username: dto.username,
+        },
+      });
+      if (!user) {
+        throw new BusinessException('用户不存在');
+      }
+      const passwordMatch = await bcrypt.compare(dto.password, user.password);
+      if (!passwordMatch) {
+        throw new BusinessException('密码错误');
+      }
+      return user;
+    } catch (error: any) {
+      this.logger.debug('登录用户失败', error.message);
+      throw error;
+    } finally {
+      this.cacheManager.del(this.CAPTCHA_PREFIX + dto.captchaKey);
+    }
+  }
+
+  /**
+   * 获取验证码
+   * @param width 验证码宽度
+   * @param height 验证码高度
+   * @returns 验证码
+   */
+  public async getCaptcha(width: number, height: number) {
+    const captcha = svgCaptcha.create({
+      size: 4,
+      fontSize: 52,
+      width,
+      height,
+      noise: 2,
+      color: true,
+      background: '#ffffff',
+      ignoreChars: '0oO1ilI', // 剔除容易混淆字符
+    });
+    const captchaKey = uuidv7();
+    const code = captcha.text;
+    await this.cacheManager.set(
+      this.CAPTCHA_PREFIX + captchaKey,
+      code,
+      this.CAPTCHA_TTL_MINUTES * 60 * 1000,
+    );
+    return {
+      captchaKey,
+      img: captcha.data,
+    };
+  }
 
   /**
    * 注册用户
