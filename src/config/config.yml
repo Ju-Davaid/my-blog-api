@@ -6,3 +6,11 @@ dataSource:
   username: root
   password: '123456'
   database: blog
+# Swagger 文档配置
+swagger:
+  enabled: true
+# 邮箱配置
+mail:
+  host: smtp.qq.com
+  port: 465
+  user: 2929727886@qq.com

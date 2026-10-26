@@ -9,6 +9,9 @@ export const configScheme = z.object({
     password: z.string().default('123456'),
     database: z.string(),
   }),
+  swagger: z.object({
+    enabled: z.boolean().default(false),
+  }),
 });
 
 export type ConfigType = z.infer<typeof configScheme>;
