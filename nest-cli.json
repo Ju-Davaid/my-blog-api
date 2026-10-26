@@ -7,6 +7,9 @@
     "assets": [
       {
         "include": "config/**/*.yml"
+      },
+      {
+        "include": "static/**/*.html"
       }
     ]
   }

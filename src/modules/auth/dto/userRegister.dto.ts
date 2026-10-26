@@ -1,7 +1,18 @@
-import { IsString, IsNotEmpty, MinLength, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MinLength,
+  MaxLength,
+  IsEmail,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserRegisterDto {
+class UserRegisterDto {
+  @ApiProperty({ description: '邮箱', example: '2929727886@qq.com' })
+  @IsEmail({}, { message: '邮箱格式错误' })
+  @IsNotEmpty({ message: '邮箱不能为空' })
+  email: string;
+
   @ApiProperty({ description: '用户名', example: 'test' })
   @IsString({ message: '用户名必须是字符串' })
   @IsNotEmpty({ message: '用户名不能为空' })
@@ -26,3 +37,5 @@ export class UserRegisterDto {
   @IsNotEmpty({ message: '注册码不能为空' })
   registerCode: string;
 }
+
+export default UserRegisterDto;

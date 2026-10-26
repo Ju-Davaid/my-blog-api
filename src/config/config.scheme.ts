@@ -12,6 +12,13 @@ export const configScheme = z.object({
   swagger: z.object({
     enabled: z.boolean().default(false),
   }),
+  mail: z.object({
+    host: z.string(),
+    port: z.number().int().positive(),
+    secure: z.boolean().default(true),
+    user: z.email(),
+    password: z.string(),
+  }),
 });
 
 export type ConfigType = z.infer<typeof configScheme>;

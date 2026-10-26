@@ -26,7 +26,7 @@ class User {
     name: 'password',
     comment: '密码',
     type: 'varchar',
-    length: 20,
+    length: 60,
   })
   password: string;
 
@@ -49,6 +49,11 @@ class User {
     comment: '更新时间',
   })
   updatedAt: Date;
+
+  constructor(username: string, password: string) {
+    this.username = username;
+    this.password = password;
+  }
 }
 
 export default User;

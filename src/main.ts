@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { ResponseWrapInterceptorInterceptor } from './common/interceptors/responsewrap.interceptor.js';
-import MyExceptionFilter from './common/filter/exception.filter.ts';
+import MyExceptionFilter from './common/filter/exception.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -31,8 +31,11 @@ async function bootstrap() {
     const apiDocument = new DocumentBuilder()
       .setTitle('我的个人博客系统 API 文档')
       .build();
-    const swaggerDocument = SwaggerModule.createDocument(app, apiDocument);
-    SwaggerModule.setup('doc', app, swaggerDocument, {
+    const swaggerDocument = SwaggerModule.createDocument(
+      app as any,
+      apiDocument,
+    );
+    SwaggerModule.setup('doc', app as any, swaggerDocument, {
       swaggerOptions: {},
     });
   }

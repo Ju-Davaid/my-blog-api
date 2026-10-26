@@ -2,14 +2,20 @@ import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration.ts';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailModule, SmtpTransport, FileTemplateEngine } from '@nestjs/mail';
+import { join } from 'node:path';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
+    // 配置模块
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
     }),
+    // 数据库ORM模块
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
         const logger = new Logger('AppModule');
@@ -27,6 +33,41 @@ import { AuthModule } from './modules/auth/auth.module.js';
         };
       },
       inject: [ConfigService],
+    }),
+    // 邮件模块
+    MailModule.forRootAsync({
+      useFactory: (configService: ConfigService) => {
+        return {
+          templates: new FileTemplateEngine({
+            dir: join(import.meta.dirname, 'static/mail/templates'),
+            cache: process.env.NODE_ENV === 'production',
+          }),
+          from: `DAVAID Blog 验证码服务 <${configService.getOrThrow('mail.user')}>`,
+          transport: new SmtpTransport({
+            host: configService.getOrThrow('mail.host'),
+            port: configService.getOrThrow('mail.port'),
+            secure: true, // 465 端口必须为 true (SSL)
+            auth: {
+              user: configService.getOrThrow('mail.user'),
+              pass: configService.getOrThrow('mail.password'),
+            },
+          }),
+        };
+      },
+      inject: [ConfigService],
+    }),
+    // 限流模块
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
+    // 缓存模块
+    CacheModule.register({
+      isGlobal: true,
     }),
     AuthModule,
   ],
