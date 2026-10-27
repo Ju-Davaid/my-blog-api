@@ -9,6 +9,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './common/guard/jwt.guard.ts';
+import { PostModule } from './modules/post/post.module.js';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { JwtGuard } from './common/guard/jwt.guard.ts';
       isGlobal: true,
     }),
     AuthModule,
+    PostModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: JwtGuard }],
 })

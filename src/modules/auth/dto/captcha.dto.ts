@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 class CaptchaDto {
@@ -17,6 +17,11 @@ class CaptchaDto {
   )
   @IsOptional()
   height: number = 40;
+
+  @ApiProperty({ description: '验证码key', required: false })
+  @IsOptional()
+  @IsUUID(4, { message: '验证码key必须是UUID4' })
+  captchaKey: string;
 }
 
 export default CaptchaDto;

@@ -1,11 +1,12 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module.ts';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { ResponseWrapInterceptorInterceptor } from './common/interceptors/responsewrap.interceptor.js';
-import MyExceptionFilter from './common/filter/exception.filter.js';
+import MyExceptionFilter from './common/filter/exception.filter.ts';
+import { JwtGuard } from './common/guard/jwt.guard.ts';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -26,9 +27,19 @@ async function bootstrap() {
   app.useGlobalFilters(new MyExceptionFilter());
   // 全局响应拦截器
   app.useGlobalInterceptors(new ResponseWrapInterceptorInterceptor());
+  // 全局 JWT 认证守卫
+  app.useGlobalGuards(new JwtGuard(app.get(Reflector)));
   // 配置 Swagger 文档
   if (swaggerEnabled) {
     const apiDocument = new DocumentBuilder()
+      .addBearerAuth({
+        description: '请输入Bearer',
+        name: 'Authorization',
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+      })
       .setTitle('我的个人博客系统 API 文档')
       .build();
     const swaggerDocument = SwaggerModule.createDocument(

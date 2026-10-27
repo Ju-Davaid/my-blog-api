@@ -9,7 +9,7 @@ import { type Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import bcrypt from 'bcrypt';
 import * as svgCaptcha from 'svg-captcha';
-import { v7 as uuidv7 } from 'uuid';
+import { v4 as uuidV4 } from 'uuid';
 import UserLoginDto from './dto/userLogin.dto.ts';
 import { JwtService } from '@nestjs/jwt';
 import LoginVO from './vo/login.vo.ts';
@@ -41,6 +41,7 @@ export class AuthService {
       60 *
       1000;
   }
+
   /**
    * 用户登录
    * @param dto 登录DTO
@@ -105,9 +106,10 @@ export class AuthService {
    * 获取验证码
    * @param width 验证码宽度
    * @param height 验证码高度
-   * @returns 验证码
+   * @param captchaKey 验证码key，不传则自动生成
+   * @returns 验证码 key 和 svg 图片
    */
-  public async getCaptcha(width: number, height: number) {
+  public async getCaptcha(width: number, height: number, captchaKey?: string) {
     const captcha = svgCaptcha.create({
       size: 4,
       fontSize: 52,
@@ -118,15 +120,15 @@ export class AuthService {
       background: '#ffffff',
       ignoreChars: '0oO1ilI', // 剔除容易混淆字符
     });
-    const captchaKey = uuidv7();
+    const finalKey = captchaKey ?? uuidV4();
     const code = captcha.text;
     await this.cacheManager.set(
-      this.CAPTCHA_PREFIX + captchaKey,
+      this.CAPTCHA_PREFIX + finalKey,
       code,
       this.CAPTCHA_TTL_MINUTES * 60 * 1000,
     );
     return {
-      captchaKey,
+      captchaKey: finalKey,
       img: captcha.data,
     };
   }
