@@ -15,3 +15,14 @@ mail:
   port: 465
   user: 2929727886@qq.com
   password: zimhnohcrcaedcde
+# JWT 配置
+jwt:
+  algorithm: 'HS256'
+  audience: '124.221.120.159'
+  issuer: '124.221.120.159'
+  secret: DAVAID+PIONEER_200302
+  refreshTokenSecret: JXF+PIONEER_200302456
+  # 访问令牌有效期 （单位分钟）
+  expiresIn: 60
+  # 刷新令牌有效期 （单位分钟）
+  refreshTokenExpiresIn: 10080

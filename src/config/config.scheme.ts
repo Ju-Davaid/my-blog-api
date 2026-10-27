@@ -19,6 +19,16 @@ export const configScheme = z.object({
     user: z.email(),
     password: z.string(),
   }),
+  jwt: z.object({
+    algorithm: z.string().default('HS256'),
+    audience: z.string().default('localhost'),
+    issuer: z.string().default('localhost'),
+    secret: z.string().min(8).default('initial_jwt_secret'),
+    refreshTokenSecret: z.string().min(8).default('initial_refresh_secret'),
+    // 单位：分钟
+    expiresIn: z.number().int().positive().default(60),
+    refreshTokenExpiresIn: z.number().int().positive().default(10080),
+  }),
 });
 
 export type ConfigType = z.infer<typeof configScheme>;

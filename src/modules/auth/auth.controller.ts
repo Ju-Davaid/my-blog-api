@@ -6,7 +6,9 @@ import UserRegisterDto from './dto/userRegister.dto.ts';
 import UserLoginDto from './dto/userLogin.dto.ts';
 import { type Response } from 'express';
 import CaptchaDto from './dto/captcua.dto.ts';
+import { Public } from '../../common/decorator/public.decorator.ts';
 
+@Public()
 @Controller('auth')
 @ApiTags('用户登录注册')
 export class AuthController {

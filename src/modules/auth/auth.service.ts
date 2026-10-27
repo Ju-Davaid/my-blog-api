@@ -11,21 +11,41 @@ import bcrypt from 'bcrypt';
 import * as svgCaptcha from 'svg-captcha';
 import { v7 as uuidv7 } from 'uuid';
 import UserLoginDto from './dto/userLogin.dto.ts';
+import { JwtService } from '@nestjs/jwt';
+import LoginVO from './vo/login.vo.ts';
+import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from './jwt.strategy.ts';
 
 @Injectable()
 export class AuthService {
-  private readonly CODE_TTL_MINUTES: number = 5; // 有效期
-  private readonly CODE_PREFIX: string = 'email:verify:';
+  private ACCESS_TOKEN_TTL: number;
+  private REFRESH_TOKEN_TTL: number;
+  private readonly CODE_TTL_MINUTES: number = 5; // 邮箱验证码有效期
   private readonly CAPTCHA_PREFIX: string = 'captcha:';
-  private readonly CAPTCHA_TTL_MINUTES: number = 1; // 验证码有效期
+  private readonly CODE_PREFIX: string = 'email:verify:';
+  private readonly CAPTCHA_TTL_MINUTES: number = 1; // 图片验证码有效期
   private readonly logger = new Logger(AuthService.name); // 验证码缓存前缀
+  private readonly REFRESH_TOKEN_PREFIX: string = 'refresh-token:';
 
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly mailer: Mailer,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-  ) {}
-
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {
+    this.ACCESS_TOKEN_TTL =
+      this.configService.getOrThrow<number>('jwt.expiresIn') * 60 * 1000;
+    this.REFRESH_TOKEN_TTL =
+      this.configService.getOrThrow<number>('jwt.refreshTokenExpiresIn') *
+      60 *
+      1000;
+  }
+  /**
+   * 用户登录
+   * @param dto 登录DTO
+   * @returns 登录VO
+   */
   public async login(dto: UserLoginDto) {
     try {
       const captcha = await this.cacheManager.get<string>(
@@ -46,7 +66,33 @@ export class AuthService {
       if (!passwordMatch) {
         throw new BusinessException('密码错误');
       }
-      return user;
+      const accessToken = this.jwtService.sign<JwtPayload>(
+        {
+          userId: user.id.toString(),
+          username: user.username,
+          role: user.role,
+          expiresAt: new Date(Date.now() + this.ACCESS_TOKEN_TTL),
+        },
+        { expiresIn: this.ACCESS_TOKEN_TTL },
+      );
+      const refreshToken = this.jwtService.sign<JwtPayload>(
+        {
+          userId: user.id.toString(),
+          username: user.username,
+          role: user.role,
+          expiresAt: new Date(Date.now() + this.REFRESH_TOKEN_TTL),
+        },
+        {
+          secret: this.configService.getOrThrow('jwt.refreshTokenSecret'),
+          expiresIn: this.REFRESH_TOKEN_TTL,
+        },
+      );
+      return new LoginVO({
+        username: user.username,
+        accessToken,
+        refreshToken,
+        role: user.role,
+      });
     } catch (error: any) {
       this.logger.debug('登录用户失败', error.message);
       throw error;

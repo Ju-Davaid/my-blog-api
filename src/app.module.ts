@@ -4,9 +4,11 @@ import configuration from './config/configuration.ts';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule, SmtpTransport, FileTemplateEngine } from '@nestjs/mail';
 import { join } from 'node:path';
-import { AuthModule } from './modules/auth/auth.module.js';
+import { AuthModule } from './modules/auth/auth.module.ts';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtGuard } from './common/guard/jwt.guard.ts';
 
 @Module({
   imports: [
@@ -71,5 +73,6 @@ import { CacheModule } from '@nestjs/cache-manager';
     }),
     AuthModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: JwtGuard }],
 })
 export class AppModule {}
