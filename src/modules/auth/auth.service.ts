@@ -15,17 +15,13 @@ import { JwtService } from '@nestjs/jwt';
 import LoginVO from './vo/login.vo.ts';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './jwt.strategy.ts';
+import { CacheKey, CacheTTL } from '../../common/enum/cache.enum.ts';
 
 @Injectable()
 export class AuthService {
   private ACCESS_TOKEN_TTL: number;
   private REFRESH_TOKEN_TTL: number;
-  private readonly CODE_TTL_MINUTES: number = 5; // 邮箱验证码有效期
-  private readonly CAPTCHA_PREFIX: string = 'captcha:';
-  private readonly CODE_PREFIX: string = 'email:verify:';
-  private readonly CAPTCHA_TTL_MINUTES: number = 1; // 图片验证码有效期
   private readonly logger = new Logger(AuthService.name); // 验证码缓存前缀
-  private readonly REFRESH_TOKEN_PREFIX: string = 'refresh-token:';
 
   constructor(
     private readonly mailer: Mailer,
@@ -50,7 +46,7 @@ export class AuthService {
   public async login(dto: UserLoginDto) {
     try {
       const captcha = await this.cacheManager.get<string>(
-        this.CAPTCHA_PREFIX + dto.captchaKey,
+        CacheKey.CAPTCHA_PREFIX + dto.captchaKey,
       );
       if (!captcha || captcha.toLowerCase() !== dto.captcha.toLowerCase()) {
         throw new BusinessException('验证码错误或已过期');
@@ -98,7 +94,7 @@ export class AuthService {
       this.logger.debug('登录用户失败', error.message);
       throw error;
     } finally {
-      this.cacheManager.del(this.CAPTCHA_PREFIX + dto.captchaKey);
+      this.cacheManager.del(CacheKey.CAPTCHA_PREFIX + dto.captchaKey);
     }
   }
 
@@ -123,9 +119,9 @@ export class AuthService {
     const finalKey = captchaKey ?? uuidV4();
     const code = captcha.text;
     await this.cacheManager.set(
-      this.CAPTCHA_PREFIX + finalKey,
+      CacheKey.CAPTCHA_PREFIX + finalKey,
       code,
-      this.CAPTCHA_TTL_MINUTES * 60 * 1000,
+      CacheTTL.CAPTCHA_TTL,
     );
     return {
       captchaKey: finalKey,
@@ -140,9 +136,11 @@ export class AuthService {
    */
   public async register(dto: UserRegisterDto) {
     try {
-      const captcha = await this.cacheManager.get(this.CODE_PREFIX + dto.email);
+      const captcha = await this.cacheManager.get(
+        CacheKey.EMAIL_CODE_PREFIX + dto.email,
+      );
       this.logger.debug(
-        `验证码缓存：${this.CODE_PREFIX + dto.email}，验证码：${captcha}`,
+        `验证码缓存：${CacheKey.EMAIL_CODE_PREFIX + dto.email}，验证码：${captcha}`,
       );
       if (!captcha || captcha !== dto.captcha) {
         throw new BusinessException('验证码错误或已过期');
@@ -152,7 +150,7 @@ export class AuthService {
       await this.userRepository.save(newUser);
     } catch (error: any) {
       this.logger.debug('注册用户失败', error.message);
-      this.cacheManager.del(this.CODE_PREFIX + dto.email);
+      this.cacheManager.del(CacheKey.EMAIL_CODE_PREFIX + dto.email);
       throw error;
     }
   }
@@ -172,18 +170,20 @@ export class AuthService {
           template: 'verifycode',
           context: {
             verifyCode,
-            expireTime: this.CODE_TTL_MINUTES,
+            expireTime: CacheTTL.EMAIL_CODE_TTL,
           },
         }),
         this.cacheManager.set(
-          this.CODE_PREFIX + email,
+          CacheKey.EMAIL_CODE_PREFIX + email,
           verifyCode,
-          this.CODE_TTL_MINUTES * 60 * 1000,
+          CacheTTL.EMAIL_CODE_TTL,
         ),
       ]);
       this.logger.log('发送注册验证码成功');
       this.logger.log(
-        `验证码缓存成功，key：${this.CODE_PREFIX + email}，验证码：${verifyCode}，有效期：${this.CODE_TTL_MINUTES}分钟。`,
+        `验证码缓存成功，key：${CacheKey.EMAIL_CODE_PREFIX + email}，验证码：${verifyCode}，有效期：${CacheTTL.EMAIL_CODE_TTL}毫秒` +
+          CacheTTL.EMAIL_CODE_TTL / 60 / 1000 +
+          '分钟',
       );
     } catch (error: any) {
       this.logger.log('发送注册验证码失败', error.message);

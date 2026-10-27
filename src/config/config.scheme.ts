@@ -12,6 +12,12 @@ export const configScheme = z.object({
   swagger: z.object({
     enabled: z.boolean().default(false),
   }),
+  redis: z.object({
+    host: z.string().default('localhost'),
+    port: z.number().int().positive().default(6379),
+    db: z.number().int().min(0).default(0),
+    password: z.string(),
+  }),
   mail: z.object({
     host: z.string(),
     port: z.number().int().positive(),

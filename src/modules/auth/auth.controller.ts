@@ -13,6 +13,7 @@ import { type Response } from 'express';
 import CaptchaDto from './dto/captcha.dto.ts';
 import { Public } from '../../common/decorator/auth.decorator.ts';
 import RefreshTokenDto from './dto/refreshToken.dto.ts';
+import { BusinessException } from '../../common/exception/business.exception.ts';
 
 @Public()
 @Controller('auth')
@@ -64,8 +65,9 @@ export class AuthController {
     @Query() captchaDto: CaptchaDto,
     @Res() res: Response,
   ) {
+    
     if (!captchaDto.captchaKey) {
-      throw new Error('验证码key不能为空');
+      throw new BusinessException('验证码key不能为空');
     }
     const { captchaKey, img } = await this.authService.getCaptcha(
       captchaDto.width,

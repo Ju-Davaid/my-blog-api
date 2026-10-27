@@ -6,6 +6,12 @@ dataSource:
   username: root
   password: '123456'
   database: blog
+# Redis 配置
+redis:
+  host: localhost
+  port: 6379
+  password: '123456'
+  db: 0
 # Swagger 文档配置
 swagger:
   enabled: true

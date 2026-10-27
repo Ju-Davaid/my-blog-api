@@ -9,7 +9,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './common/guard/jwt.guard.ts';
-import { PostModule } from './modules/post/post.module.js';
+import { PostModule } from './modules/post/post.module.ts';
+import KeyvRedis from '@keyv/redis';
 
 @Module({
   imports: [
@@ -69,8 +70,19 @@ import { PostModule } from './modules/post/post.module.js';
       ],
     }),
     // 缓存模块
-    CacheModule.register({
+    CacheModule.registerAsync({
       isGlobal: true,
+      useFactory: (configService: ConfigService) => {
+        const host = configService.getOrThrow('redis.host');
+        const port = configService.getOrThrow('redis.port');
+        const db = configService.getOrThrow('redis.db');
+        const password = configService.getOrThrow('redis.password');
+        return {
+          stores: [new KeyvRedis(`redis://:${password}@${host}:${port}/${db}`)],
+          ttl: 60000,
+        };
+      },
+      inject: [ConfigService],
     }),
     AuthModule,
     PostModule,
