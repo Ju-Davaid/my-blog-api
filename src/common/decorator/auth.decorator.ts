@@ -27,3 +27,14 @@ export const CurrentUser = createParamDecorator(
     return request.user as AuthUser;
   },
 );
+
+/**
+ *  权限装饰器元数据键
+ */
+export const ROLE_KEY = Symbol('role');
+
+/**
+ * 角色装饰器
+ * @param data 角色列表
+ */
+export const Role = (data: number[] | number) => SetMetadata(ROLE_KEY, data);

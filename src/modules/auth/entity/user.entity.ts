@@ -47,7 +47,7 @@ class User {
 
   @Column({
     name: 'role',
-    comment: '角色 0:用户 1:管理员',
+    comment: '角色 0:访客 1:管理员,2:超级管理员',
     type: 'tinyint',
     default: 0,
   })

@@ -4,12 +4,16 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
+    "watchAssets": true,
     "assets": [
       {
         "include": "config/**/*.yml"
       },
       {
-        "include": "static/**/*.html"
+        "include": "static/**/*"
+      },
+      {
+        "include": "upload/**/*"
       }
     ]
   }

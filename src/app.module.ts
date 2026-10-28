@@ -5,12 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule, SmtpTransport, FileTemplateEngine } from '@nestjs/mail';
 import { join } from 'node:path';
 import { AuthModule } from './modules/auth/auth.module.ts';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './common/guard/jwt.guard.ts';
 import { PostModule } from './modules/post/post.module.ts';
 import KeyvRedis from '@keyv/redis';
+import RoleGurad from './common/guard/role.guard.ts';
 
 @Module({
   imports: [
@@ -87,6 +88,10 @@ import KeyvRedis from '@keyv/redis';
     AuthModule,
     PostModule,
   ],
-  providers: [{ provide: APP_GUARD, useClass: JwtGuard }],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: JwtGuard },
+    { provide: APP_GUARD, useClass: RoleGurad },
+  ],
 })
 export class AppModule {}
