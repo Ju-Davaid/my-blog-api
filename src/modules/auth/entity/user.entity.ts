@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
 @Entity({
@@ -14,6 +15,9 @@ class User {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
+  @Index({
+    unique: true,
+  })
   @Column({
     name: 'username',
     comment: '用户名',
@@ -21,6 +25,17 @@ class User {
     length: 20,
   })
   username: string;
+
+  @Index({
+    unique: true,
+  })
+  @Column({
+    name: 'email',
+    comment: '邮箱',
+    type: 'varchar',
+    length: 50,
+  })
+  email: string;
 
   @Column({
     name: 'password',
@@ -50,9 +65,10 @@ class User {
   })
   updatedAt: Date;
 
-  constructor(username: string, password: string) {
+  constructor(username: string, password: string, email: string) {
     this.username = username;
     this.password = password;
+    this.email = email;
   }
 }
 

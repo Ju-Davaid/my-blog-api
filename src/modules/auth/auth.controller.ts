@@ -11,9 +11,10 @@ import UserRegisterDto from './dto/userRegister.dto.ts';
 import UserLoginDto from './dto/userLogin.dto.ts';
 import { type Response } from 'express';
 import CaptchaDto from './dto/captcha.dto.ts';
-import { Public } from '../../common/decorator/auth.decorator.ts';
+import { CurrentUser, Public } from '../../common/decorator/auth.decorator.ts';
 import RefreshTokenDto from './dto/refreshToken.dto.ts';
 import { BusinessException } from '../../common/exception/business.exception.ts';
+import { type AuthUser } from './jwt.strategy.ts';
 
 @Public()
 @Controller('auth')
@@ -23,18 +24,28 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  @ApiBearerAuth()
   @ApiOperation({ summary: '用户登录' })
   public login(@Body() userLoginDto: UserLoginDto) {
     return this.authService.login(userLoginDto);
+  }
+
+  @Public(false)
+  @Post('logout')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '用户退出登录' })
+  public logout(@CurrentUser() user: AuthUser) {
+    return this.authService.logout(user);
   }
 
   @Post('refreshToken')
   @ApiOperation({ summary: '刷新token' })
   @ApiResponse({ status: 200, description: '获取成功' })
   @ApiResponse({ status: 500, description: '服务器错误' })
-  public refresh(@Body() refreshTokenDto: RefreshTokenDto) {
-    return refreshTokenDto;
+  public refresh(
+    @Body() refreshTokenDto: RefreshTokenDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.authService.refreshToken(refreshTokenDto, user?.accessToken);
   }
 
   @Get('captcha')
@@ -65,7 +76,6 @@ export class AuthController {
     @Query() captchaDto: CaptchaDto,
     @Res() res: Response,
   ) {
-    
     if (!captchaDto.captchaKey) {
       throw new BusinessException('验证码key不能为空');
     }

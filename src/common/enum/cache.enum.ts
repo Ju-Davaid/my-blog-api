@@ -1,4 +1,4 @@
-import { minuteToMilliseconds } from '../utils/index.ts';
+import TimeUtils from '../utils/time.utils.ts';
 
 export enum CacheKey {
   /** 验证码key前缀*/
@@ -7,13 +7,15 @@ export enum CacheKey {
   EMAIL_CODE_PREFIX = 'email:code:',
   /*** 刷新tokenkey前缀*/
   REFRESH_TOKEN_PREFIX = 'refreshToken:',
+  /*** 黑名单tokenkey前缀*/
+  BLACK_TOKEN_PREFIX = 'blackToken:',
 }
 
 export enum CacheTTL {
   /** 验证码有效期*/
-  CAPTCHA_TTL = minuteToMilliseconds(1),
+  CAPTCHA_TTL = TimeUtils.minuteToMilliseconds(1),
   /*** 邮箱验证码有效期*/
-  EMAIL_CODE_TTL = minuteToMilliseconds(5),
+  EMAIL_CODE_TTL = TimeUtils.minuteToMilliseconds(5),
   /*** 刷新token有效期*/
-  REFRESH_TOKEN_TTL = minuteToMilliseconds(7 * 24 * 60),
+  REFRESH_TOKEN_TTL = TimeUtils.minuteToMilliseconds(7 * 24 * 60),
 }

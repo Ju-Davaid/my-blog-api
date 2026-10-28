@@ -1,7 +1,7 @@
 port: 3000
 # 数据库配置
 dataSource:
-  host: '124.221.120.159'
+  host: localhost
   port: 3306
   username: root
   password: '123456'
@@ -28,7 +28,5 @@ jwt:
   issuer: '124.221.120.159'
   secret: DAVAID+PIONEER_200302
   refreshTokenSecret: JXF+PIONEER_200302456
-  # 访问令牌有效期 （单位分钟）
-  expiresIn: 60
-  # 刷新令牌有效期 （单位分钟）
-  refreshTokenExpiresIn: 10080
+  expiresIn: 1h
+  refreshTokenExpiresIn: 7d

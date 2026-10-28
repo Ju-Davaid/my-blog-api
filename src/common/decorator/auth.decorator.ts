@@ -3,6 +3,7 @@ import {
   SetMetadata,
   ExecutionContext,
 } from '@nestjs/common';
+import { AuthUser } from '../../modules/auth/jwt.strategy.ts';
 
 /**
  * 公共接口装饰器元数据键
@@ -23,6 +24,6 @@ export const Public = (data: boolean = true) =>
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user;
+    return request.user as AuthUser;
   },
 );

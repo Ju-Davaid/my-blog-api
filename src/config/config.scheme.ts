@@ -32,8 +32,13 @@ export const configScheme = z.object({
     secret: z.string().min(8).default('initial_jwt_secret'),
     refreshTokenSecret: z.string().min(8).default('initial_refresh_secret'),
     // 单位：分钟
-    expiresIn: z.number().int().positive().default(60),
-    refreshTokenExpiresIn: z.number().int().positive().default(10080),
+    expiresIn: z.number().int().positive().or(z.string()).default('60m'),
+    refreshTokenExpiresIn: z
+      .number()
+      .int()
+      .positive()
+      .or(z.string())
+      .default('7d'),
   }),
 });
 
