@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import User from './entity/user.entity.ts';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
-import { CacheKey } from '../../common/enum/cache.enum.ts';
+import { MyCacheKey } from '../../common/enum/cache.enum.ts';
 import type { Request } from 'express';
 
 export interface JwtPayload {
@@ -45,7 +45,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('无效token');
     }
     const blackToken = await this.cacheManager.get<boolean>(
-      CacheKey.BLACK_TOKEN_PREFIX + token,
+      MyCacheKey.BLACK_TOKEN_PREFIX + token,
     );
     if (blackToken) {
       throw new UnauthorizedException('无效token');

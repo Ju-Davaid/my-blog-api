@@ -11,7 +11,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtGuard } from './common/guard/jwt.guard.ts';
 import { PostModule } from './modules/post/post.module.ts';
 import KeyvRedis from '@keyv/redis';
-import RoleGurad from './common/guard/role.guard.ts';
+import { RoleGuard } from './common/guard/role.guard.ts';
+import { UploadModule } from './modules/upload/upload.module.js';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import RoleGurad from './common/guard/role.guard.ts';
         logger.log(`NODE_ENV: ${process.env.NODE_ENV}`);
         const synchronize = process.env.NODE_ENV === 'development';
         return {
+          timezone: '+08:00',
           type: 'mysql',
           host: configService.getOrThrow('dataSource.host'),
           port: configService.getOrThrow('dataSource.port'),
@@ -87,11 +89,12 @@ import RoleGurad from './common/guard/role.guard.ts';
     }),
     AuthModule,
     PostModule,
+    UploadModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtGuard },
-    { provide: APP_GUARD, useClass: RoleGurad },
+    { provide: APP_GUARD, useClass: RoleGuard },
   ],
 })
 export class AppModule {}

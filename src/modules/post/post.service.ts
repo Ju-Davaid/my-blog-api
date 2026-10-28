@@ -4,6 +4,7 @@ import Post from './entity/post.entity.ts';
 import { InjectRepository } from '@nestjs/typeorm';
 import PostListDTO from './dto/postList.dto.ts';
 import PageVO from '../../common/vo/page.vo.ts';
+import CreatePostDTO from './dto/createPost.dto.ts';
 
 @Injectable()
 export class PostService {
@@ -11,6 +12,11 @@ export class PostService {
     @InjectRepository(Post) private readonly postRepository: Repository<Post>,
   ) {}
 
+  /**
+   * 获取文章列表
+   * @param dto 查询参数
+   * @returns 文章列表
+   */
   public async getList(dto: PostListDTO) {
     const { pageSize, pageNum } = dto;
     const posts = await this.postRepository.find({
@@ -24,5 +30,14 @@ export class PostService {
       pageSize,
       pageNum,
     });
+  }
+
+  /**
+   * 创建文章
+   * @param dto 创建文章参数
+   * @returns 创建文章结果
+   */
+  public async create(dto: CreatePostDTO) {
+    return await this.postRepository.save(dto);
   }
 }

@@ -18,7 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 import LoginVO from './vo/login.vo.ts';
 import { ConfigService } from '@nestjs/config';
 import { type AuthUser, type JwtPayload } from './jwt.strategy.ts';
-import { CacheKey, CacheTTL } from '../../common/enum/cache.enum.ts';
+import { MyCacheKey, MyCacheTTL } from '../../common/enum/cache.enum.ts';
 import { BusinessException } from '../../common/exception/business.exception.ts';
 import RefreshTokenDto from './dto/refreshToken.dto.ts';
 import RefreshTokenVO from './vo/refreshToken.vo.ts';
@@ -53,7 +53,7 @@ export class AuthService {
   public async login(dto: UserLoginDto) {
     try {
       const captcha = await this.cacheManager.get<string>(
-        CacheKey.CAPTCHA_PREFIX + dto.captchaKey,
+        MyCacheKey.CAPTCHA_PREFIX + dto.captchaKey,
       );
       if (!captcha || captcha.toLowerCase() !== dto.captcha.toLowerCase()) {
         throw new BusinessException('验证码错误或已过期');
@@ -99,7 +99,7 @@ export class AuthService {
       this.logger.error('登录用户失败', error.message);
       throw error;
     } finally {
-      this.cacheManager.del(CacheKey.CAPTCHA_PREFIX + dto.captchaKey);
+      this.cacheManager.del(MyCacheKey.CAPTCHA_PREFIX + dto.captchaKey);
     }
   }
 
@@ -112,7 +112,7 @@ export class AuthService {
     const ttl = user.expiresAt.getTime() - Date.now();
     if (ttl <= 0) return;
     await this.cacheManager.set(
-      CacheKey.BLACK_TOKEN_PREFIX + user.accessToken,
+      MyCacheKey.BLACK_TOKEN_PREFIX + user.accessToken,
       true,
       ttl,
     );
@@ -133,7 +133,7 @@ export class AuthService {
         },
       );
       const blacklisted = await this.cacheManager.get<boolean>(
-        CacheKey.BLACK_TOKEN_PREFIX + dto.refreshToken,
+        MyCacheKey.BLACK_TOKEN_PREFIX + dto.refreshToken,
       );
       if (blacklisted) {
         throw new UnauthorizedException('无效token');
@@ -143,7 +143,7 @@ export class AuthService {
         new Date(refreshTokenPayload.expiresAt).getTime() - Date.now();
       if (refreshTTL > 0) {
         await this.cacheManager.set(
-          CacheKey.BLACK_TOKEN_PREFIX + dto.refreshToken,
+          MyCacheKey.BLACK_TOKEN_PREFIX + dto.refreshToken,
           true,
           refreshTTL,
         );
@@ -159,7 +159,7 @@ export class AuthService {
             new Date(accessTokenPayload.expiresAt).getTime() - Date.now();
           if (accessTTL > 0) {
             await this.cacheManager.set(
-              CacheKey.BLACK_TOKEN_PREFIX + accessToken,
+              MyCacheKey.BLACK_TOKEN_PREFIX + accessToken,
               true,
               accessTTL,
             );
@@ -225,11 +225,11 @@ export class AuthService {
     });
     const finalKey = captchaKey ?? uuidV4();
     const code = captcha.text;
-    this.logger.debug(`验证码${finalKey}过期时间${CacheTTL.CAPTCHA_TTL}`);
+    this.logger.debug(`验证码${finalKey}过期时间${MyCacheTTL.CAPTCHA_TTL}`);
     await this.cacheManager.set(
-      CacheKey.CAPTCHA_PREFIX + finalKey,
+      MyCacheKey.CAPTCHA_PREFIX + finalKey,
       code,
-      CacheTTL.CAPTCHA_TTL,
+      MyCacheTTL.CAPTCHA_TTL,
     );
     return {
       captchaKey: finalKey,
@@ -245,7 +245,7 @@ export class AuthService {
   public async register(dto: UserRegisterDto) {
     try {
       const captcha = await this.cacheManager.get<string>(
-        CacheKey.EMAIL_CODE_PREFIX + dto.email,
+        MyCacheKey.EMAIL_CODE_PREFIX + dto.email,
       );
       if (!captcha || captcha !== dto.captcha) {
         throw new BusinessException('验证码错误或已过期');
@@ -267,7 +267,7 @@ export class AuthService {
       throw error;
     } finally {
       // 无论成败都作废验证码，防止同一验证码被重复使用
-      await this.cacheManager.del(CacheKey.EMAIL_CODE_PREFIX + dto.email);
+      await this.cacheManager.del(MyCacheKey.EMAIL_CODE_PREFIX + dto.email);
     }
   }
 
@@ -286,18 +286,18 @@ export class AuthService {
           template: 'verifycode',
           context: {
             verifyCode,
-            expireTime: CacheTTL.EMAIL_CODE_TTL / 60 / 1000,
+            expireTime: MyCacheTTL.EMAIL_CODE_TTL / 60 / 1000,
           },
         }),
         this.cacheManager.set(
-          CacheKey.EMAIL_CODE_PREFIX + email,
+          MyCacheKey.EMAIL_CODE_PREFIX + email,
           verifyCode,
-          CacheTTL.EMAIL_CODE_TTL,
+          MyCacheTTL.EMAIL_CODE_TTL,
         ),
       ]);
       this.logger.log('发送注册验证码成功');
       this.logger.log(
-        `验证码缓存成功，key：${CacheKey.EMAIL_CODE_PREFIX + email}，验证码：${verifyCode}，有效期：${CacheTTL.EMAIL_CODE_TTL / 60 / 1000}分钟`,
+        `验证码缓存成功，key：${MyCacheKey.EMAIL_CODE_PREFIX + email}，验证码：${verifyCode}，有效期：${MyCacheTTL.EMAIL_CODE_TTL / 60 / 1000}分钟`,
       );
     } catch (error: any) {
       this.logger.error('发送注册验证码失败', error.stack);

@@ -1,6 +1,6 @@
 import TimeUtils from '../utils/time.utils.ts';
 
-export enum CacheKey {
+export enum MyCacheKey {
   /** 验证码key前缀*/
   CAPTCHA_PREFIX = 'captcha:',
   /** 邮箱验证码key前缀*/
@@ -11,7 +11,7 @@ export enum CacheKey {
   BLACK_TOKEN_PREFIX = 'blackToken:',
 }
 
-export enum CacheTTL {
+export enum MyCacheTTL {
   /** 验证码有效期*/
   CAPTCHA_TTL = TimeUtils.minuteToMilliseconds(1),
   /*** 邮箱验证码有效期*/

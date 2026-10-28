@@ -2,6 +2,7 @@ import {
   createParamDecorator,
   SetMetadata,
   ExecutionContext,
+  applyDecorators,
 } from '@nestjs/common';
 import { AuthUser } from '../../modules/auth/jwt.strategy.ts';
 
@@ -22,7 +23,7 @@ export const Public = (data: boolean = true) =>
  * @returns 当前用户信息
  */
 export const CurrentUser = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
+  (_: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
     return request.user as AuthUser;
   },
@@ -37,4 +38,8 @@ export const ROLE_KEY = Symbol('role');
  * 角色装饰器
  * @param data 角色列表
  */
-export const Role = (data: number[] | number) => SetMetadata(ROLE_KEY, data);
+export const Role = (data: number[] | number) =>
+  applyDecorators(
+    SetMetadata(ROLE_KEY, data),
+    SetMetadata(IS_PUBLIC_KEY, false),
+  );

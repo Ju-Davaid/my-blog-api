@@ -46,7 +46,6 @@ class Post {
     type: 'varchar',
     nullable: true,
     default: '',
-    length: 200,
   })
   cover: string;
 
