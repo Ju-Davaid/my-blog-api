@@ -1,10 +1,10 @@
 enum RoleEnum {
   /** 用户 */
-  VISITOR,
+  Visitor,
   /** 管理员 */
-  ADMIN,
+  Admin,
   /** 超级管理员 */
-  SUPER_ADMIN,
+  SuperAdmin,
 }
 
 export default RoleEnum;

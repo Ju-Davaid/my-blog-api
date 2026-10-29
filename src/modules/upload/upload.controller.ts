@@ -1,6 +1,5 @@
 import {
   Controller,
-  Get,
   Logger,
   Post,
   Req,
@@ -8,24 +7,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { UploadService } from './upload.service.ts';
-import { Public } from '../../common/decorator/auth.decorator.ts';
+import { Role } from '../../common/decorator/auth.decorator.ts';
 import FileUploadDto from './dto/fileUpload.dto.ts';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
 import type { Request } from 'express';
-import { ConfigService } from '@nestjs/config';
+import RoleEnum from '../../common/enum/role.enum.ts';
 
-@Public()
 @ApiTags('上传模块')
 @Controller('upload')
+// @Role([RoleEnum.SuperAdmin, RoleEnum.Admin])
 export class UploadController {
   private readonly logger = new Logger(UploadController.name);
-
-  constructor(
-    private readonly uploadService: UploadService,
-    private readonly configService: ConfigService,
-  ) {}
 
   @Post()
   @ApiBody({ type: FileUploadDto })

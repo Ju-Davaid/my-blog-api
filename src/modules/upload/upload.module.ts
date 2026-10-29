@@ -1,4 +1,4 @@
-import { Module, Injectable } from '@nestjs/common';
+import { BadRequestException, Module } from '@nestjs/common';
 import { UploadService } from './upload.service.ts';
 import { UploadController } from './upload.controller.ts';
 import { MulterModule } from '@nestjs/platform-express';
@@ -9,6 +9,16 @@ import * as fs from 'fs';
 @Module({
   imports: [
     MulterModule.register({
+      fileFilter: (req, file, cb) => {
+        if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
+          cb(new BadRequestException('非法文件类型'), false);
+        } else {
+          cb(null, true);
+        }
+      },
+      limits: {
+        fileSize: 1024 * 1024 * 20,
+      },
       storage: diskStorage({
         destination: (_req, _file, cb) => {
           const now = new Date();
@@ -30,7 +40,10 @@ import * as fs from 'fs';
             file.originalname,
             'latin1',
           ).toString('utf8');
-          cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(originalname)}`);
+          cb(
+            null,
+            `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(originalname)}`,
+          );
         },
       }),
     }),
