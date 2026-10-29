@@ -24,9 +24,6 @@ import { UploadModule } from './modules/upload/upload.module.js';
     // 数据库ORM模块
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
-        const logger = new Logger('AppModule');
-        logger.log(`NODE_ENV: ${process.env.NODE_ENV}`);
-        const synchronize = process.env.NODE_ENV === 'development';
         return {
           timezone: '+08:00',
           type: 'mysql',
@@ -35,7 +32,7 @@ import { UploadModule } from './modules/upload/upload.module.js';
           username: configService.getOrThrow('dataSource.username'),
           password: configService.getOrThrow('dataSource.password'),
           database: configService.getOrThrow('dataSource.database'),
-          synchronize,
+          synchronize: configService.getOrThrow('isDev'),
           autoLoadEntities: true,
         };
       },

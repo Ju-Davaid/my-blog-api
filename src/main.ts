@@ -3,6 +3,7 @@ import { AppModule } from './app.module.ts';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as path from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { ResponseWrapInterceptorInterceptor } from './common/interceptors/responsewrap.interceptor.js';
 import MyExceptionFilter from './common/filter/exception.filter.ts';
@@ -50,6 +51,9 @@ async function bootstrap() {
       swaggerOptions: {},
     });
   }
+  app.useStaticAssets(path.join(process.cwd(), 'upload'), {
+    prefix: '/upload',
+  });
   const port = configService.getOrThrow('port');
   await app.listen(port);
 }

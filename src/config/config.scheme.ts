@@ -40,6 +40,7 @@ export const configScheme = z.object({
       .or(z.string())
       .default('7d'),
   }),
+  isDev: z.boolean().default(process.env.NODE_ENV === 'development'),
 });
 
 export type ConfigType = z.infer<typeof configScheme>;
