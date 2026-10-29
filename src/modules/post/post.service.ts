@@ -22,6 +22,10 @@ export class PostService {
     const posts = await this.postRepository.find({
       skip: (pageNum - 1) * pageSize,
       take: pageSize,
+      order: {
+        createdAt: 'DESC',
+        pinned: 'DESC',
+      },
     });
     const total = await this.postRepository.count();
     return new PageVO<Post>({
@@ -39,5 +43,16 @@ export class PostService {
    */
   public async create(dto: CreatePostDTO) {
     return await this.postRepository.save(dto);
+  }
+
+  /**
+   * 获取文章详情
+   * @param id 文章ID
+   * @returns 文章详情
+   */
+  public async findOne(id: number) {
+    return await this.postRepository.findOne({
+      where: { id },
+    });
   }
 }

@@ -51,8 +51,9 @@ async function bootstrap() {
       swaggerOptions: {},
     });
   }
+  // 配置静态资源服务
   app.useStaticAssets(path.join(process.cwd(), 'upload'), {
-    prefix: '/upload',
+    prefix: '/static',
   });
   const port = configService.getOrThrow('port');
   await app.listen(port);

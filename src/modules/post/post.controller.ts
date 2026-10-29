@@ -1,7 +1,21 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { PostService } from './post.service.ts';
 import { Public, Role } from '../../common/decorator/auth.decorator.ts';
-import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import PostListDTO from './dto/postList.dto.ts';
 import RoleEnum from '../../common/enum/role.enum.ts';
 import CreatePostDTO from './dto/createPost.dto.ts';
@@ -17,6 +31,22 @@ export class PostController {
   @ApiOperation({ summary: '获取文章列表' })
   findAll(@Query() dto: PostListDTO) {
     return this.postService.getList(dto);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: '获取文章详情' })
+  async getPost(
+    @Param(
+      'id',
+      new ParseIntPipe({
+        exceptionFactory(error) {
+          return new BadRequestException(error);
+        },
+      }),
+    )
+    id: number,
+  ) {
+    return this.postService.findOne(id);
   }
 
   @Post('create')

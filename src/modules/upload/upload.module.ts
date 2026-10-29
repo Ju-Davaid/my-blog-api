@@ -50,5 +50,6 @@ import * as fs from 'fs';
   ],
   controllers: [UploadController],
   providers: [UploadService],
+  exports: [UploadService],
 })
 export class UploadModule {}
