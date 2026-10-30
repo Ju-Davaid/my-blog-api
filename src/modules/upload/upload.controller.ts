@@ -24,6 +24,9 @@ export class UploadController {
   @ApiOperation({ summary: '上传文件' })
   @UseInterceptors(FileInterceptor('file'))
   async upload(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
-    return this.uploadService.handleSingleUpload(file, req);
+    const localPath = this.uploadService.handleSingleUpload(file);
+    return {
+      url: `${req.protocol}://${req.get('host')}${localPath}`,
+    };
   }
 }

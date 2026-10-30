@@ -5,10 +5,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import PostListDTO from './dto/postList.dto.ts';
 import PageVO from '../../common/vo/page.vo.ts';
 import CreatePostDTO from './dto/createPost.dto.ts';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PostService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(Post) private readonly postRepository: Repository<Post>,
   ) {}
 
@@ -27,6 +29,9 @@ export class PostService {
         pinned: 'DESC',
       },
     });
+    posts.forEach((item) => {
+      item.cover = this.configService.get('url') + item.cover;
+    }); 
     const total = await this.postRepository.count();
     return new PageVO<Post>({
       list: posts,
@@ -42,6 +47,7 @@ export class PostService {
    * @returns 创建文章结果
    */
   public async create(dto: CreatePostDTO) {
+    dto.cover = new URL(dto.cover).pathname;
     return await this.postRepository.save(dto);
   }
 

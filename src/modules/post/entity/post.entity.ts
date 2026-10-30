@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { PostPinnedEnum, PostStatusEnum } from '../enum/PostEnum.ts';
 
 @Entity({
   name: 'post',
@@ -19,7 +20,7 @@ class Post {
     comment: '文章标题',
     type: 'varchar',
     nullable: false,
-    length: 200,
+    length: 100,
   })
   title: string;
 
@@ -29,7 +30,7 @@ class Post {
     type: 'varchar',
     nullable: true,
     default: '',
-    length: 500,
+    length: 200,
   })
   desc: string;
 
@@ -53,7 +54,7 @@ class Post {
     name: 'pinned',
     comment: '是否置顶 0:否 1:是',
     type: 'tinyint',
-    default: 0,
+    default: PostPinnedEnum.No,
   })
   pinned: number;
 
@@ -61,7 +62,7 @@ class Post {
     name: 'status',
     comment: '文章状态 0:草稿 1:已发布',
     type: 'tinyint',
-    default: 0,
+    default: PostStatusEnum.Draft,
   })
   status: number;
 
@@ -73,6 +74,31 @@ class Post {
     default: () => 'CURRENT_TIMESTAMP',
   })
   publishTime: Date;
+
+  @Column({
+    name: 'category_id',
+    comment: '分类ID',
+    type: 'int',
+    default: null,
+  })
+  categoryId: number | null;
+
+  @Column({
+    name: 'tag_ids',
+    comment: '标签ID列表',
+    type: 'varchar',
+    nullable: true,
+    default: '',
+  })
+  tagIds: string;
+
+  @Column({
+    name: 'views',
+    comment: '文章浏览量',
+    type: 'int',
+    default: 0,
+  })
+  views: number;
 
   @CreateDateColumn({
     name: 'created_at',
