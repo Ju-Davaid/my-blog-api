@@ -1,8 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
@@ -12,11 +8,12 @@ import User from './entity/user.entity.ts';
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { MyCacheKey } from '../../common/enum/cache.enum.ts';
 import type { Request } from 'express';
+import RoleEnum from '../../common/enum/role.enum.ts';
 
 export interface JwtPayload {
   userId: number;
   username: string;
-  role: number | number[];
+  role: RoleEnum | RoleEnum[];
   expiresAt: Date;
 }
 
@@ -59,7 +56,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('无效token');
     }
     return {
-      ...payload,
+      userId: user.id,
+      username: user.username,
+      role: user.role,
       expiresAt: new Date(payload.expiresAt),
       accessToken: token,
     };

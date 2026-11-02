@@ -15,6 +15,7 @@ import { CurrentUser, Public } from '../../common/decorator/auth.decorator.ts';
 import RefreshTokenDto from './dto/refreshToken.dto.ts';
 import { BusinessException } from '../../common/exception/business.exception.ts';
 import { type AuthUser } from './jwt.strategy.ts';
+import CaptchaVO from './vo/captcha.vo.ts';
 
 @Public()
 @Controller('auth')
@@ -52,44 +53,28 @@ export class AuthController {
   @ApiOperation({ summary: '获取验证码' })
   @ApiResponse({ status: 200, description: '获取成功' })
   @ApiResponse({ status: 500, description: '服务器错误' })
-  public async getCaptcha(
-    @Query() captchaDto: CaptchaDto,
-    @Res() res: Response,
-  ) {
-    const { captchaKey, img } = await this.authService.getCaptcha(
+  public async getCaptcha(@Query() captchaDto: CaptchaDto) {
+    const { captchaKey, captchaImg } = await this.authService.getCaptcha(
       captchaDto.width,
       captchaDto.height,
     );
-    res.setHeader('Cache-Control', 'public, max-age=0');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.setHeader(this.CAPTCHA_HEADER_KEY, captchaKey);
-    res.contentType('image/svg+xml');
-    res.send(img);
+    return new CaptchaVO({ captchaImg, captchaKey });
   }
 
   @Get('refreshCaptcha')
   @ApiOperation({ summary: '刷新验证码' })
   @ApiResponse({ status: 200, description: '刷新成功' })
   @ApiResponse({ status: 500, description: '服务器错误' })
-  public async refreshCaptcha(
-    @Query() captchaDto: CaptchaDto,
-    @Res() res: Response,
-  ) {
+  public async refreshCaptcha(@Query() captchaDto: CaptchaDto) {
     if (!captchaDto.captchaKey) {
       throw new BusinessException('验证码key不能为空');
     }
-    const { captchaKey, img } = await this.authService.getCaptcha(
+    const { captchaKey, captchaImg } = await this.authService.getCaptcha(
       captchaDto.width,
       captchaDto.height,
       captchaDto.captchaKey,
     );
-    res.setHeader('Cache-Control', 'public, max-age=0');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.setHeader(this.CAPTCHA_HEADER_KEY, captchaKey);
-    res.contentType('image/svg+xml');
-    res.send(img);
+    return new CaptchaVO({ captchaImg, captchaKey });
   }
 
   @Post('register')

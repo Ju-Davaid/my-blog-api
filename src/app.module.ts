@@ -1,4 +1,4 @@
-import { Logger, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration.ts';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +13,7 @@ import { PostModule } from './modules/post/post.module.ts';
 import KeyvRedis from '@keyv/redis';
 import { RoleGuard } from './common/guard/role.guard.ts';
 import { UploadModule } from './modules/upload/upload.module.js';
+import { TagModule } from './modules/tag/tag.module.js';
 
 @Module({
   imports: [
@@ -65,7 +66,7 @@ import { UploadModule } from './modules/upload/upload.module.js';
       throttlers: [
         {
           ttl: 60000,
-          limit: 10,
+          limit: 30,
         },
       ],
     }),
@@ -87,6 +88,7 @@ import { UploadModule } from './modules/upload/upload.module.js';
     AuthModule,
     PostModule,
     UploadModule,
+    TagModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

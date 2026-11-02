@@ -233,7 +233,7 @@ export class AuthService {
     );
     return {
       captchaKey: finalKey,
-      img: captcha.data,
+      captchaImg: captcha.data,
     };
   }
 

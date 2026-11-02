@@ -5,6 +5,7 @@ import {
   applyDecorators,
 } from '@nestjs/common';
 import { AuthUser } from '../../modules/auth/jwt.strategy.ts';
+import RoleEnum from '../enum/role.enum.ts';
 
 /**
  * 公共接口装饰器元数据键
@@ -38,7 +39,7 @@ export const ROLE_KEY = Symbol('role');
  * 角色装饰器
  * @param data 角色列表
  */
-export const Role = (data: number[] | number) =>
+export const Role = (data: RoleEnum[] | RoleEnum) =>
   applyDecorators(
     SetMetadata(ROLE_KEY, data),
     SetMetadata(IS_PUBLIC_KEY, false),
