@@ -27,7 +27,6 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Get('list')
-  @ApiBearerAuth()
   @ApiOperation({ summary: '获取文章列表' })
   findAll(@Query() dto: PostListDTO) {
     return this.postService.getList(dto);
@@ -51,6 +50,7 @@ export class PostController {
 
   @Post('createOrUpdate')
   @Role(RoleEnum.Admin)
+  @ApiBearerAuth()
   @ApiOperation({ summary: '创建或更新文章' })
   @ApiConsumes('multipart/form-data')
   createOrUpdate(@Body() dto: CreatePostDTO) {
@@ -58,6 +58,7 @@ export class PostController {
   }
 
   @Get('delete/:id')
+  @ApiBearerAuth()
   @Role(RoleEnum.Admin)
   @ApiOperation({ summary: '删除文章' })
   deletePost(

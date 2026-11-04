@@ -1,27 +1,33 @@
-import { PrimaryGeneratedColumn, Column, Entity } from 'typeorm';
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import Album from './album.entity.ts';
 
 @Entity({
   name: 'photo',
-  comment: '相册',
+  comment: '照片',
 })
 class Photo {
   @PrimaryGeneratedColumn({
     name: 'id',
-    comment: '相册ID',
+    comment: '照片ID',
   })
   id: number;
-  
-  @Column({
-    name: 'alum_id',
-    comment: '相册ID',
-  })
-  alumId: number;
 
   @Column({
     name: 'album_id',
     comment: '相册ID',
   })
   albumId: number;
+
+  @ManyToOne(() => Album, (album) => album.photos, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'album_id' })
+  album: Album;
+
   @Column({
     name: 'path',
     type: 'varchar',

@@ -4,7 +4,9 @@ import {
   Entity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import Photo from './photo.entity.ts';
 
 @Entity({
   name: 'album',
@@ -43,6 +45,11 @@ class Album {
     comment: '更新时间',
   })
   updatedAt: Date;
+
+  @OneToMany(() => Photo, (photo) => photo.album, {
+    cascade: true,
+  })
+  photos: Photo[];
 }
 
 export default Album;
