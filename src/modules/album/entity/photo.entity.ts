@@ -5,6 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import type { Relation } from 'typeorm';
 import Album from './album.entity.ts';
 
 @Entity({
@@ -26,7 +27,7 @@ class Photo {
 
   @ManyToOne(() => Album, (album) => album.photos, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'album_id' })
-  album: Album;
+  album: Relation<Album>;
 
   @Column({
     name: 'path',
