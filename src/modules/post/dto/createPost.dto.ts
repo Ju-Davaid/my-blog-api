@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsIn,
   IsNotEmpty,
   IsNumber,
@@ -9,8 +10,14 @@ import {
   MaxLength,
 } from 'class-validator';
 import { PostStatusEnum } from '../enum/PostEnum.ts';
+import Tag from '../../tag/entity/tag.entity.ts';
 
 class CreatePostDTO {
+  @ApiProperty({ description: '文章ID', required: false })
+  @IsNumber({}, { message: '文章ID必须是数字' })
+  @IsOptional()
+  id?: number;
+
   @ApiProperty({ description: '文章标题' })
   @IsNotEmpty({ message: '文章标题不能为空' })
   @IsString({ message: '文章标题必须是字符串' })
@@ -50,11 +57,15 @@ class CreatePostDTO {
   @IsOptional()
   categoryId: number | null = null;
 
-  @ApiProperty({ description: '标签ID列表', required: false, default: '' })
-  @IsNotEmpty({ message: '标签ID列表不能为空' })
-  @IsString({ message: '标签ID列表必须是字符串' })
+  @ApiProperty({
+    description: '标签ID列表',
+    required: false,
+    type: [Number],
+    default: [],
+  })
+  @IsArray({ message: '标签ID列表必须是数组' })
   @IsOptional()
-  tagIds: string = '';
+  tags: Tag[] = [];
 
   @ApiProperty({
     description: '文章状态 0:草稿 1:已发布',

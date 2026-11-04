@@ -40,7 +40,7 @@ export class PostController {
       'id',
       new ParseIntPipe({
         exceptionFactory(error) {
-          return new BadRequestException(error);
+          return new BadRequestException('文章ID必须是数字');
         },
       }),
     )
@@ -49,11 +49,11 @@ export class PostController {
     return this.postService.findOne(id);
   }
 
-  @Post('create')
-  // @Role(RoleEnum.ADMIN)
-  @ApiOperation({ summary: '创建文章' })
+  @Post('createOrUpdate')
+  @Role(RoleEnum.Admin)
+  @ApiOperation({ summary: '创建或更新文章' })
   @ApiConsumes('multipart/form-data')
-  create(@Body() dto: CreatePostDTO) {
-    return this.postService.create(dto);
+  createOrUpdate(@Body() dto: CreatePostDTO) {
+    return this.postService.createOrUpdate(dto);
   }
 }

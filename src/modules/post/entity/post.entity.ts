@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { PostPinnedEnum, PostStatusEnum } from '../enum/PostEnum.ts';
+import Tag from '../../tag/entity/tag.entity.ts';
 
 @Entity({
   name: 'post',
@@ -75,22 +78,13 @@ class Post {
   })
   publishTime: Date;
 
-  @Column({
-    name: 'category_id',
-    comment: '分类ID',
-    type: 'int',
-    default: null,
+  @ManyToMany(() => Tag, { cascade: true })
+  @JoinTable({
+    name: 'post_tag',
+    joinColumn: { name: 'post_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
   })
-  categoryId: number | null;
-
-  @Column({
-    name: 'tag_ids',
-    comment: '标签ID列表',
-    type: 'varchar',
-    nullable: true,
-    default: '',
-  })
-  tagIds: string;
+  tags: Tag[];
 
   @Column({
     name: 'views',
