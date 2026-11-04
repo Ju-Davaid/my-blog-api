@@ -1,18 +1,37 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class UploadService {
-  public handleSingleUpload(file: Express.Multer.File) {
-    if (!file) {
-      throw new BadRequestException('参数错误');
-    }
+  public handleSingleUpload(
+    file: Express.Multer.File | undefined,
+    md5?: string,
+  ) {
     const uploadRoot = path.join(process.cwd(), 'upload');
+    if (!file) {
+      const existed = this.findExistedByMd5(uploadRoot, md5);
+      if (!existed) {
+        throw new BadRequestException('参数错误');
+      }
+      return existed;
+    }
     const urlPath = path
       .relative(uploadRoot, file.path)
       .split(path.sep)
       .join('/');
-    const localUrl = `/static/${urlPath}`;
-    return localUrl;
+    return `/static/${urlPath}`;
+  }
+
+  private findExistedByMd5(uploadRoot: string, md5?: string) {
+    if (!md5) return null;
+    const now = new Date();
+    const subDir = `${now.getFullYear()}/${now.getMonth() + 1}`;
+    const dir = path.join(uploadRoot, subDir);
+    if (!fs.existsSync(dir)) return null;
+    const name = fs
+      .readdirSync(dir)
+      .find((fileName) => fileName.startsWith(`${md5}.`));
+    return name ? `/static/${subDir}/${name}` : null;
   }
 }

@@ -10,7 +10,23 @@ import * as fs from 'fs';
   imports: [
     MulterModule.register({
       fileFilter: (req, file, cb) => {
-        if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
+        const { md5 } = req.body;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1;
+        const originalname = Buffer.from(file.originalname, 'latin1').toString(
+          'utf8',
+        );
+        const des = path.join(
+          process.cwd(),
+          '/upload',
+          `${year}/${month}`,
+          `${md5}${path.extname(originalname)}`,
+        );
+        console.log('des', des);
+        if (fs.existsSync(des)) {
+          cb(null, false);
+        } else if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
           cb(new BadRequestException('非法文件类型'), false);
         } else {
           cb(null, true);
@@ -24,26 +40,23 @@ import * as fs from 'fs';
           const now = new Date();
           const year = now.getFullYear();
           const month = now.getMonth() + 1;
-          const day = now.getDate();
           const uploadPath = path.join(
             process.cwd(),
             '/upload',
-            `${year}/${month}/${day}`,
+            `${year}/${month}`,
           );
           if (!fs.existsSync(uploadPath)) {
             fs.mkdirSync(uploadPath, { recursive: true });
           }
           cb(null, uploadPath);
         },
-        filename: (_req, file, cb) => {
+        filename: (req, file, cb) => {
+          const { md5 } = req.body;
           const originalname = Buffer.from(
             file.originalname,
             'latin1',
           ).toString('utf8');
-          cb(
-            null,
-            `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(originalname)}`,
-          );
+          cb(null, `${md5}${path.extname(originalname)}`);
         },
       }),
     }),

@@ -28,7 +28,10 @@ export class UploadController {
   @ApiOperation({ summary: '上传文件' })
   @UseInterceptors(FileInterceptor('file'))
   async upload(@UploadedFile() file: Express.Multer.File, @Req() req: Request) {
-    const localPath = this.uploadService.handleSingleUpload(file);
+    const localPath = this.uploadService.handleSingleUpload(
+      file,
+      req.body?.md5,
+    );
     return {
       url: `${this.configService.get('url')}:${this.configService.get('port')}${localPath}`,
     };

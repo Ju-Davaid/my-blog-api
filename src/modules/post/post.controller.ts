@@ -56,4 +56,21 @@ export class PostController {
   createOrUpdate(@Body() dto: CreatePostDTO) {
     return this.postService.createOrUpdate(dto);
   }
+
+  @Get('delete/:id')
+  @Role(RoleEnum.Admin)
+  @ApiOperation({ summary: '删除文章' })
+  deletePost(
+    @Param(
+      'id',
+      new ParseIntPipe({
+        exceptionFactory(error) {
+          return new BadRequestException('文章ID必须是数字');
+        },
+      }),
+    )
+    id: number,
+  ) {
+    return this.postService.delete(id);
+  }
 }

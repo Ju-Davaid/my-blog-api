@@ -14,6 +14,7 @@ import KeyvRedis from '@keyv/redis';
 import { RoleGuard } from './common/guard/role.guard.ts';
 import { UploadModule } from './modules/upload/upload.module.js';
 import { TagModule } from './modules/tag/tag.module.js';
+import { AlbumModule } from './modules/album/album.module.js';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { TagModule } from './modules/tag/tag.module.js';
     PostModule,
     UploadModule,
     TagModule,
+    AlbumModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

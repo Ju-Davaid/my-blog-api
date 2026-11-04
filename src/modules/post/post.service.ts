@@ -81,4 +81,8 @@ export class PostService {
     }
     return null;
   }
+
+  public async delete(id: number) {
+    await this.postRepository.delete(id);
+  }
 }
