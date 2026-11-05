@@ -15,6 +15,8 @@ import { RoleGuard } from './common/guard/role.guard.ts';
 import { UploadModule } from './modules/upload/upload.module.js';
 import { TagModule } from './modules/tag/tag.module.ts';
 import { AlbumModule } from './modules/album/album.module.ts';
+import { ScheduleModule } from '@nestjs/schedule';
+import CleanFileTask from './common/task/cleanFile.task.ts';
 
 @Module({
   imports: [
@@ -86,6 +88,8 @@ import { AlbumModule } from './modules/album/album.module.ts';
       },
       inject: [ConfigService],
     }),
+    // 定时任务模块
+    ScheduleModule.forRoot(),
     AuthModule,
     PostModule,
     UploadModule,
@@ -93,9 +97,14 @@ import { AlbumModule } from './modules/album/album.module.ts';
     AlbumModule,
   ],
   providers: [
+    // 全局限流守卫
     { provide: APP_GUARD, useClass: ThrottlerGuard },
+    // JWT守卫
     { provide: APP_GUARD, useClass: JwtGuard },
+    // 角色守卫
     { provide: APP_GUARD, useClass: RoleGuard },
+    // 清理文件任务
+    CleanFileTask,
   ],
 })
 export class AppModule {}

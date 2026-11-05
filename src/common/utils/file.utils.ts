@@ -7,7 +7,7 @@ import path from 'path';
  * @param list 文件列表
  * @returns 文件列表
  */
-const getAllFiles = (dir: string, list: string[] = []) => {
+export const getAllFiles = (dir: string, list: string[] = []) => {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
   for (const entry of entries) {
