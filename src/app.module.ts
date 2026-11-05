@@ -17,6 +17,8 @@ import { TagModule } from './modules/tag/tag.module.ts';
 import { AlbumModule } from './modules/album/album.module.ts';
 import { ScheduleModule } from '@nestjs/schedule';
 import CleanFileTask from './common/task/cleanFile.task.ts';
+import Post from './modules/post/entity/post.entity.ts';
+import Photo from './modules/album/entity/photo.entity.ts';
 
 @Module({
   imports: [
@@ -90,6 +92,8 @@ import CleanFileTask from './common/task/cleanFile.task.ts';
     }),
     // 定时任务模块
     ScheduleModule.forRoot(),
+    // 定时任务所需的 Repository
+    TypeOrmModule.forFeature([Post, Photo]),
     AuthModule,
     PostModule,
     UploadModule,
