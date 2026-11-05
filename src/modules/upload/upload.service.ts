@@ -4,6 +4,12 @@ import * as fs from 'fs';
 
 @Injectable()
 export class UploadService {
+  /**
+   * 处理单个文件上传
+   * @param file 上传的文件
+   * @param md5 文件的md5值
+   * @returns 上传后的文件路径
+   */
   public handleSingleUpload(
     file: Express.Multer.File | undefined,
     md5?: string,
@@ -23,6 +29,12 @@ export class UploadService {
     return `/static/${urlPath}`;
   }
 
+  /**
+   * 查找已存在的文件路径
+   * @param uploadRoot 上传根目录
+   * @param md5 文件的md5值
+   * @returns 已存在的文件路径
+   */
   private findExistedByMd5(uploadRoot: string, md5?: string) {
     if (!md5) return null;
     const now = new Date();

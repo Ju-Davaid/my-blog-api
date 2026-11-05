@@ -26,7 +26,9 @@ class Photo {
   albumId: number;
 
   @ManyToOne(() => Album, (album) => album.photos, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'album_id' })
+  @JoinColumn({
+    name: 'album_id',
+  })
   album: Relation<Album>;
 
   @Column({

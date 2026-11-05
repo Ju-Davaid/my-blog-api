@@ -33,7 +33,7 @@ export class PostService {
       },
     });
     posts.forEach((item) => {
-      item.cover = `${this.configService.get('url')}:${this.configService.get('port')}${item.cover}`;
+      item.cover = `${this.configService.get('app.url')}:${this.configService.get('app.port')}${item.cover}`;
     });
     const total = await this.postRepository.count();
     return new PageVO<Post>({
@@ -76,7 +76,7 @@ export class PostService {
     if (targetPost) {
       return {
         ...targetPost,
-        cover: `${this.configService.get('url')}:${this.configService.get('port')}${targetPost.cover}`,
+        cover: `${this.configService.get('app.url')}:${this.configService.get('app.port')}${targetPost.cover}`,
       };
     }
     return null;

@@ -55,7 +55,7 @@ async function bootstrap() {
   app.useStaticAssets(path.join(process.cwd(), 'upload'), {
     prefix: '/static',
   });
-  const port = configService.getOrThrow('port');
+  const port = configService.getOrThrow('app.port');
   await app.listen(port);
 }
 await bootstrap();

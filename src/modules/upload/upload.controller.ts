@@ -33,7 +33,7 @@ export class UploadController {
       req.body?.md5,
     );
     return {
-      url: `${this.configService.get('url')}:${this.configService.get('port')}${localPath}`,
+      url: `${this.configService.get('app.url')}:${this.configService.get('app.port')}${localPath}`,
     };
   }
 }

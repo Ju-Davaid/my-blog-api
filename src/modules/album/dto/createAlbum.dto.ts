@@ -15,8 +15,8 @@ class CreateAlbumDTO {
     description: '相册描述',
     required: false,
   })
+  @IsOptional()
   @IsString({ message: '相册描述必须是字符串' })
-  @IsNotEmpty({ message: '相册描述不能为空' })
   @MaxLength(50, { message: '相册描述最多50个字符' })
   desc: string;
 }

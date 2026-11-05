@@ -13,8 +13,8 @@ import { PostModule } from './modules/post/post.module.ts';
 import KeyvRedis from '@keyv/redis';
 import { RoleGuard } from './common/guard/role.guard.ts';
 import { UploadModule } from './modules/upload/upload.module.js';
-import { TagModule } from './modules/tag/tag.module.js';
-import { AlbumModule } from './modules/album/album.module.js';
+import { TagModule } from './modules/tag/tag.module.ts';
+import { AlbumModule } from './modules/album/album.module.ts';
 
 @Module({
   imports: [

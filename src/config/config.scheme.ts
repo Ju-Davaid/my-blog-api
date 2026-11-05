@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
 export const configScheme = z.object({
-  port: z.number().int().positive().default(3000),
-  url: z.string().default('http://localhost'),
+  app: z.object({
+    port: z.number().int().positive().default(3000),
+    url: z.string().default('http://localhost'),
+  }),
   dataSource: z.object({
     host: z.string().default('localhost'),
     port: z.number().int().positive().default(3306),
