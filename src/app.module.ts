@@ -16,6 +16,7 @@ import { UploadModule } from './modules/upload/upload.module.js';
 import { TagModule } from './modules/tag/tag.module.ts';
 import { AlbumModule } from './modules/album/album.module.ts';
 import { ScheduleModule } from '@nestjs/schedule';
+import { MomentModule } from './modules/moment/moment.module.js';
 import CleanFileTask from './common/task/cleanFile.task.ts';
 import Post from './modules/post/entity/post.entity.ts';
 import Photo from './modules/album/entity/photo.entity.ts';
@@ -99,6 +100,7 @@ import Photo from './modules/album/entity/photo.entity.ts';
     UploadModule,
     TagModule,
     AlbumModule,
+    MomentModule,
   ],
   providers: [
     // 全局限流守卫

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray } from 'class-validator';
+import { Allow, IsArray, IsNotEmptyObject } from 'class-validator';
 
 class MultipleUploadDto {
   @ApiProperty({
@@ -15,7 +15,8 @@ class MultipleUploadDto {
     items: { type: 'string', format: 'binary' },
     description: '文件数组',
   })
-  @IsArray()
+  @Allow()
+  // @IsNotEmptyObject({ nullable: false }, { message: '文件数组不能为空' })
   files: Express.Multer.File[];
 }
 
