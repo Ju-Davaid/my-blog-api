@@ -12,7 +12,16 @@ import * as fs from 'fs';
       global: true,
       ...MulterModule.register({
         fileFilter: (req, file, cb) => {
-          const { md5 } = req.body;
+          const md5Raw = req.body?.md5 as string | string[];
+          const md5List = Array.isArray(md5Raw) ? md5Raw : md5Raw ? [md5Raw] : [];
+          // fileFilter 按文件在 multipart 中的顺序逐个触发，用计数器对齐 md5
+          const state = req as {
+            _md5Idx?: number;
+            _currentMd5?: string;
+          };
+          const idx = state._md5Idx ?? 0;
+          state._md5Idx = idx + 1;
+          const md5 = md5List[idx];
           if (!md5) return cb(new BadRequestException('缺少md5'), false);
           const now = new Date();
           const year = now.getFullYear();
@@ -27,12 +36,13 @@ import * as fs from 'fs';
             `${year}/${month}`,
             `${md5}${path.extname(originalname)}`,
           );
-          console.log('des', des);
           if (fs.existsSync(des)) {
             cb(null, false);
           } else if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
             cb(new BadRequestException('非法文件类型'), false);
           } else {
+            // filename 回调会在该文件被接受后立即触发，暂存当前 md5
+            state._currentMd5 = md5;
             cb(null, true);
           }
         },
@@ -55,7 +65,8 @@ import * as fs from 'fs';
             cb(null, uploadPath);
           },
           filename: (req, file, cb) => {
-            const { md5 } = req.body;
+            const md5 = (req as unknown as { _currentMd5?: string })
+              ._currentMd5;
             const originalname = Buffer.from(
               file.originalname,
               'latin1',
