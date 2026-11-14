@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import MultipleUploadDto from '../../upload/dto/multipleUpload.dto.ts';
 import { IsArray, IsOptional, IsString } from 'class-validator';
 
 class CreateMomentDTO {

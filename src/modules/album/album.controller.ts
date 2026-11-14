@@ -3,7 +3,6 @@ import {
   Post,
   Body,
   Get,
-  Param,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -19,7 +18,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { ParseIntPipe } from '@nestjs/common';
 import DeleteAlbumDTO from './dto/deleteAlbum.dto.ts';
 import AddPhotoDTO from './dto/addPhoto.dto.ts';
 import { FileInterceptor } from '@nestjs/platform-express';

@@ -17,9 +17,10 @@ import { TagModule } from './modules/tag/tag.module.ts';
 import { AlbumModule } from './modules/album/album.module.ts';
 import { ScheduleModule } from '@nestjs/schedule';
 import { MomentModule } from './modules/moment/moment.module.js';
+import { PhotoModule } from './modules/photo/photo.module.js';
 import CleanFileTask from './common/task/cleanFile.task.ts';
 import Post from './modules/post/entity/post.entity.ts';
-import Photo from './modules/album/entity/photo.entity.ts';
+import Photo from './modules/photo/entity/photo.entity.ts';
 
 @Module({
   imports: [
@@ -101,6 +102,7 @@ import Photo from './modules/album/entity/photo.entity.ts';
     TagModule,
     AlbumModule,
     MomentModule,
+    PhotoModule,
   ],
   providers: [
     // 全局限流守卫

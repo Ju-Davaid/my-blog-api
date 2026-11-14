@@ -2,12 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import type { Relation } from 'typeorm';
-import MomentPhoto from './momentPhoto.entity.ts';
 
 @Entity({ name: 'moment', comment: '动态表' })
 class Moment {
@@ -35,11 +32,6 @@ class Moment {
     default: 0,
   })
   likeCount: number;
-
-  @OneToMany(() => MomentPhoto, (momentPhoto) => momentPhoto.moment, {
-    cascade: true,
-  })
-  photos: Relation<Partial<MomentPhoto>>[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -3,11 +3,10 @@ import { AlbumService } from './album.service.js';
 import { AlbumController } from './album.controller.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import Album from './entity/album.entity.ts';
-import Photo from './entity/photo.entity.ts';
-import { UploadModule } from '../upload/upload.module.ts';
+import { PhotoModule } from '../photo/photo.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Album, Photo]), UploadModule],
+  imports: [TypeOrmModule.forFeature([Album]), PhotoModule],
   controllers: [AlbumController],
   providers: [AlbumService],
   exports: [TypeOrmModule],

@@ -6,7 +6,7 @@ import { getAllFiles } from '../utils/file.utils.ts';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Post from '../../modules/post/entity/post.entity.ts';
-import Photo from '../../modules/album/entity/photo.entity.ts';
+import Photo from '../../modules/photo/entity/photo.entity.ts';
 
 @Injectable()
 class CleanFileTask {
@@ -21,7 +21,7 @@ class CleanFileTask {
   ) {}
 
   /**
-   * 每天 5 点清理未被文章或相册引用的上传文件
+   * 每天 5 点清理未被文章或统一照片表引用的上传文件
    */
   @Cron('0 0 5 * * *')
   public async handleClean() {
@@ -64,6 +64,7 @@ class CleanFileTask {
         this.photoRepository
           .createQueryBuilder('photo')
           .where('photo.path LIKE :kw', { kw: keyword })
+          .orWhere('photo.thumbPath LIKE :kw', { kw: keyword })
           .getCount(),
       ]);
       if (postCount + photoCount > 0) return false;

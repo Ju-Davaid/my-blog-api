@@ -3,11 +3,10 @@ import { MomentService } from './moment.service.js';
 import { MomentController } from './moment.controller.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import Moment from './entity/moment.entity.ts';
-import MomentPhoto from './entity/momentPhoto.entity.ts';
-import { UploadModule } from '../upload/upload.module.ts';
+import { PhotoModule } from '../photo/photo.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Moment, MomentPhoto]), UploadModule],
+  imports: [TypeOrmModule.forFeature([Moment]), PhotoModule],
   controllers: [MomentController],
   providers: [MomentService],
   exports: [TypeOrmModule],

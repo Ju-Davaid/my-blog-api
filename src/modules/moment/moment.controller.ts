@@ -1,24 +1,9 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Query,
-  UploadedFiles,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { MomentService } from './moment.service.js';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import CreateMomentDTO from './dto/createMoment.dto.ts';
 import { Public, Role } from '../../common/decorator/auth.decorator.ts';
 import RoleEnum from '../../common/enum/role.enum.ts';
-import { FilesInterceptor } from '@nestjs/platform-express';
 import GetMomentListDTO from './dto/getMomentList.dto.ts';
 import DeleteMomentDTO from './dto/deleteMoment.dto.ts';
 
@@ -37,7 +22,6 @@ export class MomentController {
   @ApiBearerAuth()
   @Role(RoleEnum.Admin)
   create(@Body() dto: CreateMomentDTO) {
-    console.log(dto);
     return this.momentService.create(dto);
   }
 
